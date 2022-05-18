@@ -23,15 +23,21 @@ public class TrackerServiceImpl implements TrackerService{
             tracker.setTracker1(trackerVO.getTracker1());
             tracker.setTracker2(trackerVO.getTracker2());
             tracker.setTrack_time(LocalDateTime.now());
-            Integer id = trackerDao.insert(tracker);
-            if(id == 0){
-                System.out.println("新增會員帳號時發生錯誤");
-                return Optional.of("新增會員帳號時發生錯誤");
-            }
-            return Optional.empty();
+            trackerDao.save(tracker);
+
+            return Optional.of("新增追蹤成功");
         }catch (Exception e){
-            System.out.println(e);
-            return Optional.empty();
+            return Optional.of("新增追蹤發生以下錯誤："+e);
+        }
+    }
+
+    @Override
+    public Optional<String> deleteTrack(String tracker1, String tracker2) {
+        try{
+            trackerDao.deleteTrackById(tracker1,tracker2);
+            return Optional.of("刪除追蹤成功");
+        }catch (Exception e){
+            return Optional.of("刪除追蹤發生以下錯誤："+e);
         }
     }
 }
