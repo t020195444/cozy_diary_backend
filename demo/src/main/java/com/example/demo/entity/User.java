@@ -60,5 +60,9 @@ public class User implements Serializable {
     @JoinColumn(name = "follower1" , referencedColumnName = "google_id")
     private List<Follower> follower;
 
+    @OneToMany(targetEntity = UserCategory.class,cascade = CascadeType.ALL)
+    @JoinColumn(name = "uid" , referencedColumnName = "google_id")
+    private List<UserCategory> userCategoryList;
+
 
 }

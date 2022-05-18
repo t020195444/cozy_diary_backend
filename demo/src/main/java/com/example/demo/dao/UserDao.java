@@ -15,6 +15,8 @@ public interface UserDao extends JpaRepository<User,Integer> {
 
       public User findUserByGoogleId(String gid);
 
+
+
 //    @Query("SELECT * FROM user u INNER JOIN tracker t ON u.google_id = t.tracker1 WHERE u.google_id = :gid")
 //    public List<TrackerResponse> findTrackListByGoogleId(String gid);
 //

@@ -5,6 +5,8 @@ import com.example.demo.service.FileStorageService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -23,23 +25,34 @@ import java.util.stream.Stream;
 
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
+    String rootPath = "/Users/yangzhelun/Desktop/development/uploadFile/";
     private final Path root = Paths.get("/Users/yangzhelun/Desktop/development/uploadFile");
 
     @Override
     public void init() {
         try {
-            Files.createDirectory(root);
+            File uploadFolder = root.toFile();
+            if(!uploadFolder.exists()){
+                Files.createDirectory(root);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize folder for upload!");
         }
     }
 
     @Override
-    public void save(MultipartFile[] files) {
+    public void save(MultipartFile[] files,String pid , String uid) {
         Arrays.asList(files).forEach(file ->{
             try {
-                Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+                Path userPath = Paths.get(rootPath + uid + "/" + pid);
+                File userFile = userPath.toFile();
+                System.out.println(rootPath);
+                if(! userFile.exists()){
+                    userFile.mkdir();
+                }
+                Files.copy(file.getInputStream(),userPath.resolve(file.getOriginalFilename()));
             } catch (Exception e) {
+                System.out.println(e);
                 throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
             }
         });
