@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.FileResponse;
+import com.example.demo.dto.PostRequest;
+import com.example.demo.entity.Post;
 import com.example.demo.model.FileInfo;
 import com.example.demo.service.FileStorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,11 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
@@ -25,16 +24,24 @@ public class FilesController {
     @Autowired
     FileStorageService storageService;
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @PostMapping("/upload")
-    public ResponseEntity<FileResponse> uploadFile(@RequestParam("file") MultipartFile[] file) {
+    public ResponseEntity<FileResponse> uploadFile(@RequestParam(required=true, value="file") MultipartFile[] file,@RequestParam(required=true, value="jsondata") String jsonData) {
         String message = "";
         try {
-            storageService.save(file);
-            message = "Uploaded the file successfully: ";
+            PostRequest postRequest = new PostRequest();
+            postRequest = objectMapper.readValue(jsonData, PostRequest.class);
+            System.out.println(postRequest.getPost().getTitle());
+//            ObjectMapper objectMapper = new ObjectMapper();
+//
+//            System.out.println(objectMapper.readValue(postRequest,PostRequest.class));
+//            storageService.save(file);
+//            message = "Uploaded the file successfully: ";
             return ResponseEntity.status(HttpStatus.OK).body(new FileResponse(message));
         } catch (Exception e) {
             message = "Could not upload the file:!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new FileResponse(message));
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new FileResponse(e.toString()));
         }
     }
     @GetMapping("/files")
