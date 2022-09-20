@@ -33,8 +33,8 @@ public class Comments implements Serializable {
     @Column(name = "pid")
     private Integer pid;
 
-    @OneToMany(targetEntity = RepliesComments.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "commentId" , referencedColumnName = "commentId")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "comment_id")
     private List<RepliesComments> repliesComments;
 
 }
