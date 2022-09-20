@@ -21,4 +21,5 @@ public class PostFile implements Serializable {
 
     @Column(name = "post_url")
     private String postUrl;
+
 }

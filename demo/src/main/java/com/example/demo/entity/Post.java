@@ -40,11 +40,18 @@ public class Post implements Serializable {
     @Column(name = "modify_time",nullable = true)
     private String modify_time;
 
-    @Column(name = "cover",nullable = true)
+    @Column(name = "cover")
     private String cover;
 
-    @Column(name = "cid" , nullable = true)
+    @Column(name = "cid" )
     private Integer cid;
+
+    @Column(name = "post_lng", nullable = true)
+    private double postLng;
+
+    @Column(name = "post_lat" , nullable = true)
+    private double postLat;
+
 
 
     @OneToMany(targetEntity = PostFile.class , cascade = CascadeType.ALL)

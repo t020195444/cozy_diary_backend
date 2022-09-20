@@ -18,4 +18,6 @@ public class PostVO {
     public String cover;
     public String modify_time;
     public Integer cid;
+    public Double postLng;
+    public Double postLat;
 }

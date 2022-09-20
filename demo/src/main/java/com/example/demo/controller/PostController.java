@@ -36,9 +36,9 @@ public class PostController {
         try {
             PostRequest postRequest = new PostRequest();
             postRequest = objectMapper.readValue(jsonData, PostRequest.class);
-            Optional<String> optional = postService.addPost(postRequest);
+            Optional<String> optional = postService.addPost(file,postRequest);
             try {
-                storageService.save(file,optional.get(),postRequest.getPost().getUid());
+                storageService.savePost(file,optional.get(),postRequest.getPost().getUid());
             }catch (Exception e){
                 System.out.println("file upload error:"+e);
             }
@@ -49,7 +49,7 @@ public class PostController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:10001")
+    @CrossOrigin(origins = "http://172.20.10.10:8080")
     @RequestMapping(value = "/getPostCover", method = RequestMethod.GET)
     public ResponseEntity<Object> getPostCoverByUid(@RequestParam String uid){
         try{
@@ -60,11 +60,35 @@ public class PostController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:10001")
+    @CrossOrigin(origins = "http://172.20.10.10:8080")
     @RequestMapping(value = "/getPost", method = RequestMethod.GET)
     public ResponseEntity<Object> getPostByUid(@RequestParam String uid){
         try{
             List<Post> post = postService.getPostByUid(uid);
+            return JsonResponse.generateResponse("獲取用戶貼文成功", HttpStatus.OK, post);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return JsonResponse.generateResponse(e.getMessage(), HttpStatus.NOT_FOUND, null);
+        }
+    }
+
+    @CrossOrigin(origins = "http://172.20.10.10:8080")
+    @RequestMapping(value = "/getPostDetail", method = RequestMethod.GET)
+    public ResponseEntity<Object> getPostDetailByPid(@RequestParam Integer pid){
+        try{
+            Post post = postService.getPostDetail(pid);
+            return JsonResponse.generateResponse("獲取用戶貼文成功", HttpStatus.OK, post);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return JsonResponse.generateResponse(e.getMessage(), HttpStatus.NOT_FOUND, null);
+        }
+    }
+
+    @CrossOrigin(origins = "http://172.20.10.10:8080")
+    @RequestMapping(value = "/getPostCoverForPersonalPage", method = RequestMethod.GET)
+    public ResponseEntity<Object> getPostCoverForPersonalPage(@RequestParam String uid){
+        try{
+            List<PostResponse> post = postService.getPostCoverForPersonalPageByUid(uid);
             return JsonResponse.generateResponse("獲取用戶貼文成功", HttpStatus.OK, post);
         }catch (Exception e){
             System.out.println(e.getMessage());

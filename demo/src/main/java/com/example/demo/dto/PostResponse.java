@@ -6,10 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
-import javax.persistence.SqlResultSetMapping;
 
 
 @Data
@@ -18,17 +14,19 @@ import javax.persistence.SqlResultSetMapping;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class PostResponse {
-    private String uid;
+    private Integer pid;
     private Integer likes;
     private String cover;
     private String title;
-    private Integer cid;
+    private String pic;
+    private String username;
 
-    public PostResponse(String uid, String cover, Integer likes , String title , Integer cid) {
-        this.uid = uid;
+    public PostResponse(Integer pid , String cover, Integer likes , String title , String pic, String username) {
+        this.pid = pid;
         this.likes = likes;
         this.cover = cover;
         this.title = title;
-        this.cid = cid;
+        this.pic = pic;
+        this.username = username;
     }
 }

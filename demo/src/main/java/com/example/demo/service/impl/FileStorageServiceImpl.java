@@ -26,7 +26,10 @@ import java.util.stream.Stream;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
     String rootPath = "/Users/yangzhelun/Desktop/development/uploadFile/";
-    private final Path root = Paths.get("/Users/yangzhelun/Desktop/development/uploadFile");
+//    private final Path root = Paths.get("/Users/yangzhelun/Desktop/development/uploadFile");
+
+//    String rootPath = "/root/uploadFile/";
+    private final Path root = Paths.get(rootPath);
 
     @Override
     public void init() {
@@ -41,10 +44,10 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public void save(MultipartFile[] files,String pid , String uid) {
+    public void savePost(MultipartFile[] files,String pid , String uid) {
         Arrays.asList(files).forEach(file ->{
             try {
-                Path userPath = Paths.get(rootPath + uid + "/" + pid);
+                Path userPath = Paths.get(rootPath + uid + "/postFile/" + pid);
                 File userFile = userPath.toFile();
                 System.out.println(rootPath);
                 if(! userFile.exists()){
@@ -57,6 +60,41 @@ public class FileStorageServiceImpl implements FileStorageService {
             }
         });
     }
+
+    @Override
+    public void saveActivity(MultipartFile[] files, String aid, String uid) {
+        Arrays.asList(files).forEach(file ->{
+            try {
+                Path userPath = Paths.get(rootPath + uid + "/activityFile/" + aid);
+                File userFile = userPath.toFile();
+                System.out.println(rootPath);
+                if(! userFile.exists()){
+                    userFile.mkdir();
+                }
+                Files.copy(file.getInputStream(),userPath.resolve(file.getOriginalFilename()));
+            } catch (Exception e) {
+                System.out.println(e);
+                throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void saveProfile(MultipartFile file, String uid) {
+        try {
+            Path userPath = Paths.get(rootPath + uid + "/userProfile/");
+            File userFile = userPath.toFile();
+            if(! userFile.exists()){
+                userFile.mkdir();
+            }
+            Files.copy(file.getInputStream(),userPath.resolve(file.getOriginalFilename()));
+        }catch (Exception e){
+            System.out.println(e);
+            throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+        }
+    }
+
+
 
     @Override
     public Resource load(String filename) {
