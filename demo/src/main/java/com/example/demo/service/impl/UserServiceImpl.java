@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.dao.UserDao;
 import com.example.demo.dto.FollowerResponse;
 import com.example.demo.dto.TrackerResponse;
+import com.example.demo.dto.UserRegisterRequest;
 import com.example.demo.entity.User;
 import com.example.demo.exception.DuplicateCreateException;
 import com.example.demo.exception.NotFoundException;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,33 +41,49 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<String> register(UserVO userVO) {
-        User data = userDao.findUserByGoogleId(userVO.getGoogle_id());
+    public Optional<String> register(UserRegisterRequest userRegisterRequest) {
+        User data = userDao.findUserByGoogleId(userRegisterRequest.getUser().getGoogleId());
         String basic = "/Users/yangzhelun/Desktop/development/uploadFile";
+        String dbFile = "http://172.20.10.10:8080/staticFile/";
+
+//        String basic = "/root/uploadFile";
+//        String dbFile = "https://140.131.114.166:80/staticFile/";
 
         if (data != null) {
             return Optional.of("該帳號已註冊");
         }
-
-        User user = new User();
-        user.setGoogleId(userVO.getGoogle_id());
-        user.setAge(userVO.getAge());
-        user.setName(userVO.getName());
-        user.setSex(userVO.getSex());
-        user.setEmail(userVO.getEmail());
-        user.setBirth(LocalDate.parse(userVO.getBirth()));
-        user.setCreate_time(LocalDateTime.now());
-        user.setIntroduction(userVO.getIntroduction());
-        user.setPic(userVO.getPic());
-        userDao.save(user);
-        File userFile = new File(basic + "/" + userVO.getGoogle_id());
-        if ( !userFile.exists()){
-            userFile.mkdir();
+        try {
+            dbFile = dbFile + userRegisterRequest.getUser().getGoogleId() + "/userProfile";
+            User user = new User();
+            LocalDate now = LocalDate.now();
+            LocalDate birth = LocalDate.parse(userRegisterRequest.getUser().getBirth().toString());
+            Long diff = birth.until(now, ChronoUnit.YEARS);
+            System.out.println(diff);
+            user.setGoogleId(userRegisterRequest.getUser().getGoogleId());
+            user.setName(userRegisterRequest.getUser().getName());
+            user.setSex(userRegisterRequest.getUser().getSex());
+            user.setEmail(userRegisterRequest.getUser().getEmail());
+            user.setAge(Math.toIntExact(diff));
+            user.setBirth(LocalDate.parse(userRegisterRequest.getUser().getBirth().toString()));
+            user.setCreate_time(LocalDateTime.now());
+            user.setIntroduction(userRegisterRequest.getUser().getIntroduction());
+            File userFile = new File(basic + "/" + userRegisterRequest.getUser().getGoogleId());
+            File userProfile = new File(userFile.getPath()+ "/userProfile");
+            File postFile = new File(userFile.getPath()+ "/postFile");
+            File activityFile = new File(userFile.getPath()+ "/activityFile");
+            user.setPic(dbFile+"/"+userRegisterRequest.getUser().getPic());
+            userDao.save(user);
+            if ( !userFile.exists()){
+                userFile.mkdir();
+                userProfile.mkdir();
+                postFile.mkdir();
+                activityFile.mkdir();
+            }
+            return Optional.of("註冊成功");
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return Optional.of(e.toString());
         }
-        System.out.println("uid" + userVO.getGoogle_id());
-
-
-        return Optional.of("註冊成功");
 
     }
 

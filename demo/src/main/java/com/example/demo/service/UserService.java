@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.FollowerResponse;
 import com.example.demo.dto.TrackerResponse;
+import com.example.demo.dto.UserRegisterRequest;
 import com.example.demo.vo.UserVO;
 import com.example.demo.entity.User;
 
@@ -12,7 +13,7 @@ public interface UserService {
 
     public User findUserByGoogleId(String gid);
 
-    public Optional<String> register(UserVO userVO);
+    public Optional<String> register(UserRegisterRequest userRegisterRequest);
 
     public Optional<String> updateUser(UserVO userVO);
 }
